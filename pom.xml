@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <prerequisites>
+        <maven>3.0.0</maven>
+    </prerequisites>
+
+    <parent>
+        <groupId>com.mediasift.parents</groupId>
+        <artifactId>scala</artifactId>
+        <version>3.0.5</version>
+    </parent>
+
+    <groupId>com.github.jond3k</groupId>
+    <artifactId>csdltools</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>CsdlTools</name>
+    <description>Tools for working with DataSift's CSDL language</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <scala.version>2.9.1</scala.version>
+        <shortName>csdltools</shortName>
+    </properties>
+
+    <organization>
+        <name>DataSift Inc.</name>
+        <url>http://datasift.com/</url>
+    </organization>
+
+    <issueManagement>
+        <system>github</system>
+        <url>http://github.com/datasift/${project.artifactId}</url>
+    </issueManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/datasift/${project.artifactId}</connection>
+        <developerConnection>scm:git:git@github.com:datasift/${project.artifactId}</developerConnection>
+        <url>https://github.com/datasift/${project.artifactId}</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>com.datasift.maven.release</id>
+            <url>scp://repo.favsys.net:55522/var/www/repo.favsys.net/release</url>
+        </repository>
+        <snapshotRepository>
+            <id>com.datasift.maven.snapshot</id>
+            <url>scp://repo.favsys.net:55522/var/www/repo.favsys.net/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <dependencies>
+
+        <!-- this is a scala project -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+
+        <!-- used for HashCodeBuilder -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <!-- an old classic. brings in IOUtils -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <!-- TESTING -->
+
+        <!-- scalatest provides us with unit and functional tests -->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.version}</artifactId>
+            <version>2.0.M3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- use java mockito for mocking -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+
+            <!-- scala maven plugin -->
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <charset>UTF-8</charset>
+                    <recompileMode>incremental</recompileMode>
+                    <launchers>
+                        <launcher>
+                            <id>server</id>
+                            <mainClass>${mainClass}</mainClass>
+                            <args>
+                                <arg>server</arg>
+                                <arg>src/main/etc/sample.yaml</arg>
+                            </args>
+                        </launcher>
+                    </launchers>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                            <goal>doc</goal>
+                            <goal>doc-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>process-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- disable surefire so we don't produce superfluous test reports -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+
+            <!-- enable scalatest -->
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+                <version>1.0-M2</version>
+                <configuration>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <junitxml>.</junitxml>
+                    <filereports>WDF TestSuite.txt</filereports>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- override some maven compiler settings -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerVersion>1.6</compilerVersion>
+                    <optimize>false</optimize>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>com.mediasift.readonly.release</id>
+            <url>http://repo.favsys.net/release</url>
+            <name>MediaSift Stable Releases</name>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>com.mediasift.readonly.snapshot</id>
+            <url>http://repo.favsys.net/snapshot</url>
+            <name>MediaSift Snapshots</name>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>org.sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project>
