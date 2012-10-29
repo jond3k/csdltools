@@ -43,17 +43,6 @@
         <url>https://github.com/datasift/${project.artifactId}</url>
     </scm>
 
-    <distributionManagement>
-        <repository>
-            <id>com.datasift.maven.release</id>
-            <url>scp://repo.favsys.net:55522/var/www/repo.favsys.net/release</url>
-        </repository>
-        <snapshotRepository>
-            <id>com.datasift.maven.snapshot</id>
-            <url>scp://repo.favsys.net:55522/var/www/repo.favsys.net/snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <dependencies>
 
         <!-- this is a scala project -->
