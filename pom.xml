@@ -14,7 +14,7 @@
 
     <groupId>com.github.jond3k</groupId>
     <artifactId>csdltools</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
 
     <name>csdltools</name>
