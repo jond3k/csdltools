@@ -51,11 +51,14 @@ class CsdlParsers extends RegexParsers {
     s => new Not(s._2)
   }
 
-  def rule: Parser[Rule] = target ~ operator ~ argument ^^ {
-                             s => new Rule(s._1._1, s._1._2, s._2)
+  def rule: Parser[Rule] = target ~ binaryOperator ~ argument ^^ {
+                             s => Rule(s._1._1, s._1._2.caseInsensitive, s._2)
                            } |
-                           target ~ caseSensitiveOperator ~ argument ^^ {
-                             s => new Rule(s._1._1, s._1._2, s._2)
+                           target ~ "cs" ~ binaryOperator ~ argument ^^ {
+                             s => Rule(s._1._1._1, s._1._2.caseSensitive, s._2)
+                           } |
+                           target ~ unitaryOperator ^^ {
+                             s => Rule(s._1, s._2, null)
                            }
 
   def target: Parser[Target] = """[\w\._]+""".r ^^ {
@@ -66,27 +69,26 @@ class CsdlParsers extends RegexParsers {
     s => new Stream(s._2.value)
   }
 
-  def caseSensitiveOperator: Parser[Operator] = "cs" ~ operator ^^ {
-    s => new Operator(s._2.operator, true)
+  def unitaryOperator: Parser[Operator] = List("exists").mkString("|").r ^^ {
+    s => new Operator(s)
   }
 
-  def operator: Parser[Operator] = List("contains",
-                                    "substr",
-                                    "contains_any",
-                                    "contains_near",
-                                    "exists",
-                                    "in",
-                                    "==",
-                                    "!=",
-                                    ">",
-                                    ">=",
-                                    "<",
-                                    "<=",
-                                    "regex_partial",
-                                    "regex_exact",
-                                    "geo_box",
-                                    "geo_radius",
-                                    "geo_polygon").mkString("|").r ^^ {
+  def binaryOperator: Parser[Operator] = List("contains",
+    "substr",
+    "contains_any",
+    "contains_near",
+    "in",
+    "==",
+    "!=",
+    ">",
+    ">=",
+    "<",
+    "<=",
+    "regex_partial",
+    "regex_exact",
+    "geo_box",
+    "geo_radius",
+    "geo_polygon").mkString("|").r ^^ {
     s => new Operator(s)
   }
 

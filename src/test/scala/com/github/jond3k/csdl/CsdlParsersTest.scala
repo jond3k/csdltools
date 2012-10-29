@@ -44,6 +44,7 @@ class CsdlParsersTest extends CsdlParsers with FlatSpec with MustMatchers with P
     parsing("interaction.schema.version == 123") must equal(Rule(Target("interaction.schema.version"), Operator("=="), Text("123")))
     parsing("something.user_ids in [123, 456]") must equal(Rule(Target("something.user_ids"), Operator("in"), TextList(List(Text("123"), Text("456")))))
     parsing("interaction.schema.version cs != 123") must equal(Rule(Target("interaction.schema.version"), Operator("!=", cs=true), Text("123")))
+    parsing("interaction.schema.version exists") must equal(Rule(Target("interaction.schema.version"), Operator("exists"), null))
     assertFail("== \"fakebook\"")
     assertFail("interaction.type ==")
     assertFail("interaction.type")
