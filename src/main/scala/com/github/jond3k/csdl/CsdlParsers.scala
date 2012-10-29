@@ -2,12 +2,14 @@ package com.github.jond3k.csdl
 
 import ast._
 import util.parsing.combinator.RegexParsers
-
+import com.github.jond3k.CaseInsensitivePattern
 
 /**
  * @author Jonathan Davey <jon.davey@datasift.com>
  */
 class CsdlParsers extends RegexParsers {
+
+  implicit def insensitivity(str: String): CaseInsensitivePattern = new CaseInsensitivePattern(str)
 
   def body: Parser[Expression] = tagging | expressions
 
@@ -15,11 +17,11 @@ class CsdlParsers extends RegexParsers {
     s => new Tags(s._1, s._2)
   }
 
-  def returns: Parser[Returns] = "return" ~ "{" ~ expressions ~ "}" ^^ {
+  def returns: Parser[Returns] = "return".ri ~ "{" ~ expressions ~ "}" ^^ {
     s => new Returns(s._1._2)
   }
 
-  def tag: Parser[Tag] = "tag" ~ doubleQuotedText ~ "{" ~ expressions ~ "}" ^^ {
+  def tag: Parser[Tag] = "tag".ri ~ doubleQuotedText ~ "{" ~ expressions ~ "}" ^^ {
     s => new Tag(s._1._1._1._2.value, s._1._2)
   }
 
@@ -27,13 +29,13 @@ class CsdlParsers extends RegexParsers {
     disjunction
 
   def disjunction: Parser[Expression] =
-    conjunction ~ "or" ~ disjunction ^^ {
+    conjunction ~ "or".ri ~ disjunction ^^ {
       s => new Or(s._1._1, s._2)
     } |
     conjunction
 
   def conjunction: Parser[Expression] =
-    expression ~ "and" ~ conjunction ^^ {
+    expression ~ "and".ri ~ conjunction ^^ {
       s => new And(s._1._1, s._2)
     } |
     expression
@@ -47,14 +49,14 @@ class CsdlParsers extends RegexParsers {
     s => s._1._2
   }
 
-  def negation: Parser[Expression] = "not" ~ expression ^^ {
+  def negation: Parser[Expression] = "not".ri ~ expression ^^ {
     s => new Not(s._2)
   }
 
   def rule: Parser[Rule] = target ~ binaryOperator ~ argument ^^ {
                              s => Rule(s._1._1, s._1._2.caseInsensitive, s._2)
                            } |
-                           target ~ "cs" ~ binaryOperator ~ argument ^^ {
+                           target ~ "cs".ri ~ binaryOperator ~ argument ^^ {
                              s => Rule(s._1._1._1, s._1._2.caseSensitive, s._2)
                            } |
                            target ~ unitaryOperator ^^ {
@@ -65,12 +67,12 @@ class CsdlParsers extends RegexParsers {
     s => new Target(s)
   }
 
-  def stream: Parser[Stream] = "stream" ~ doubleQuotedText ^^ {
+  def stream: Parser[Stream] = "stream".ri ~ doubleQuotedText ^^ {
     s => new Stream(s._2.value)
   }
 
-  def unitaryOperator: Parser[Operator] = List("exists").mkString("|").r ^^ {
-    s => new Operator(s)
+  def unitaryOperator: Parser[Operator] = List("exists").mkString("|").ri ^^ {
+    s => new Operator(s.toLowerCase)
   }
 
   def binaryOperator: Parser[Operator] = List("contains",
@@ -88,8 +90,8 @@ class CsdlParsers extends RegexParsers {
     "regex_exact",
     "geo_box",
     "geo_radius",
-    "geo_polygon").mkString("|").r ^^ {
-    s => new Operator(s)
+    "geo_polygon").mkString("|").ri ^^ {
+    s => new Operator(s.toLowerCase)
   }
 
   def argument: Parser[Argument] = text | textList ^^ {

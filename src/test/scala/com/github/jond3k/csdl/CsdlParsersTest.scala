@@ -119,4 +119,12 @@ class CsdlParsersTest extends CsdlParsers with FlatSpec with MustMatchers with P
     ))
   }
 
+  it must "parse keywords in a case-insensitive way" in {
+    implicit val parserToTest = expressions
+    parsing("a SuBStR \"abc\"") must equal(Rule(Target("a"), Operator("substr"), Text("abc")))
+    parsing("a exists aNd b eXisTs") must equal(And(Rule(Target("a"), Operator("exists")), Rule(Target("b"), Operator("exists"))))
+    parsing("a exists Or b eXisTs") must equal(Or(Rule(Target("a"), Operator("exists")), Rule(Target("b"), Operator("exists"))))
+    parsing("NOT a exisTS") must equal(Not(Rule(Target("a"), Operator("exists"))))
+  }
+
 }
