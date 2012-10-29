@@ -25,6 +25,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <scala.version>2.9.1</scala.version>
         <shortName>csdltools</shortName>
+        <gitHubOwner>jond3k</gitHubOwner>
     </properties>
 
     <!-- fluff for sonatype -->
@@ -38,20 +39,21 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/jond3k/${project.artifactId}</url>
-        <connection>scm:git:https://github.com/jond3k/${project.artifactId}.git</connection>
-        <developerConnection>scm:git:git@github.com:jond3k/${project.artifactId}.git</developerConnection>
+        <url>https://github.com/${gitHubOwner}/${project.artifactId}</url>
+        <connection>scm:git:https://github.com/${gitHubOwner}/${project.artifactId}.git</connection>
+        <developerConnection>scm:git:git@github.com:${gitHubOwner}/${project.artifactId}.git</developerConnection>
     </scm>
 
     <developers>
         <developer>
             <id>jond3k</id>
+            <name>Jonathan Davey</name>
         </developer>
     </developers>
 
     <issueManagement>
         <system>github</system>
-        <url>http://github.com/jond3k/${project.artifactId}</url>
+        <url>http://github.com/${gitHubOwner}/${project.artifactId}</url>
     </issueManagement>
 
     <!-- end fluff for sonatype -->
