@@ -1,4 +1,5 @@
-=csdltools=
+csdltools
+=========
 
 Tools for working with DataSift's CSDL query language.
 
