@@ -3,6 +3,7 @@ package com.github.jond3k.csdl
 import ast._
 import util.parsing.combinator.RegexParsers
 import com.github.jond3k.CaseInsensitivePattern
+import util.parsing.input.CharSequenceReader
 
 /**
  * @author Jonathan Davey <jon.davey@datasift.com>
@@ -126,4 +127,15 @@ class CsdlParsers extends RegexParsers {
     s => Text.fromQuoted(s)
   }
 
+  def parse[T](s: String)(implicit p: Parser[T]): T = {
+    //wrap the parser in the phrase parse to make sure all input is consumed
+    val phraseParser = phrase(p)
+    //we need to wrap the string in a reader so our parser can digest it
+    val input = new CharSequenceReader(s)
+    phraseParser(input) match {
+      case Success(t,_)     => t
+      case NoSuccess(msg,_) => throw new IllegalArgumentException(
+        "Could not parse '" + s + "': " + msg)
+    }
+  }
 }
