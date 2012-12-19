@@ -52,7 +52,7 @@ class CsdlParsers extends RegexParsers {
     s => s._1._2
   }
 
-  def negation: Parser[CsdlBody] = "not".ri ~ expression ^^ {
+  def negation: Parser[CsdlBody] = "not".ri ~ expressions ^^ {
     s => new Not(s._2)
   }
 
@@ -74,11 +74,15 @@ class CsdlParsers extends RegexParsers {
     s => new Stream(s._2.value)
   }
 
-  def unitaryOperatorType: Parser[String] = List("exists").mkString("|").ri ^^ {
+  def unitaryOperatorType: Parser[String] = unitaryOperatorRegex ^^ {
     _.toLowerCase
   }
 
-  def binaryOperatorType: Parser[String] = List("contains",
+  val unitaryOperatorList: List[String] = List("exists")
+
+  val unitaryOperatorRegex = orMatchRegex(unitaryOperatorList).ri
+
+  val binaryOperatorList: List[String] = List("contains",
     "substr",
     "contains_any",
     "contains_near",
@@ -94,7 +98,13 @@ class CsdlParsers extends RegexParsers {
     "regex_exact",
     "geo_box",
     "geo_radius",
-    "geo_polygon").mkString("|").ri ^^ {
+    "geo_polygon")
+
+  protected def orMatchRegex(list: List[String]) = list.mkString("|")
+
+  val binaryOperatorRegex = orMatchRegex(binaryOperatorList).ri
+
+  def binaryOperatorType: Parser[String] = binaryOperatorRegex ^^ {
     _.toLowerCase
   }
 

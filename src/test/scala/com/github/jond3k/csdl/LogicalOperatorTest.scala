@@ -31,6 +31,15 @@ class LogicalOperatorTest extends ParserTestBase {
     ))
   }
 
+  it must "allow nested not operator" in {
+    implicit val parserToTest = expressions
+
+    parsing("a.a == \"a\" AND NOT b.b == \"b\"") must equal(And(
+      Rule(Target("a.a"), Operator("=="), Text("a")),
+      Not(Rule(Target("b.b"), Operator("=="), Text("b")))
+    ))
+  }
+
   it must "obey explicit operator precedence" in {
     implicit val parserToTest = expressions
 

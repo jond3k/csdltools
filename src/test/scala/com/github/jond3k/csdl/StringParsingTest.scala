@@ -26,4 +26,9 @@ class StringParsingTest extends ParserTestBase {
     assertFail("")
   }
 
+  it must "parse dollar symbols" in {
+    implicit val parserToTest = doubleQuotedText
+    parsing( """"$"""") must equal(Text("$"))
+  }
+
 }
