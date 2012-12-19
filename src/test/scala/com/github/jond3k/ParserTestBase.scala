@@ -1,13 +1,15 @@
 package com.github.jond3k
 
+import csdl.CsdlParsers
 import util.parsing.input.CharSequenceReader
 import org.scalatest.matchers.MustMatchers
 import util.parsing.combinator.RegexParsers
+import org.scalatest.FlatSpec
 
 /**
  * @author Jonathan Davey <jon.davey@datasift.com>
  */
-trait ParserTestHelper extends MustMatchers with RegexParsers {
+trait ParserTestBase extends CsdlParsers with MustMatchers with RegexParsers  with FlatSpec {
 
   type Ex = IllegalArgumentException
 

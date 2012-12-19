@@ -3,4 +3,4 @@ package com.github.jond3k.csdl.ast
 /**
  * @author Jonathan Davey <jon.davey@datasift.com>
  */
-case class Not(expression: Expression) extends Expression
+case class Not(expression: CsdlBody) extends CsdlBody

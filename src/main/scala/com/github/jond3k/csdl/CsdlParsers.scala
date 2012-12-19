@@ -9,12 +9,14 @@ import com.github.jond3k.CaseInsensitivePattern
  */
 class CsdlParsers extends RegexParsers {
 
+  protected override val whiteSpace = """(\s|//.*|(?m)/\*(\*(?!/)|[^*])*\*/)+""".r
+
   implicit def insensitivity(str: String): CaseInsensitivePattern = new CaseInsensitivePattern(str)
 
-  def body: Parser[Expression] = tagging | expressions
+  def body: Parser[CsdlBody] = taggedBody | expressions
 
-  def tagging: Parser[Tags] = (tag*) ~ returns ^^ {
-    s => new Tags(s._1, s._2)
+  def taggedBody: Parser[CsdlTaggedBody] = (tag*) ~ returns ^^ {
+    s => new CsdlTaggedBody(s._1, s._2)
   }
 
   def returns: Parser[Returns] = "return".ri ~ "{" ~ expressions ~ "}" ^^ {
@@ -25,42 +27,42 @@ class CsdlParsers extends RegexParsers {
     s => new Tag(s._1._1._1._2.value, s._1._2)
   }
 
-  def expressions: Parser[Expression] =
+  def expressions: Parser[CsdlBody] =
     disjunction
 
-  def disjunction: Parser[Expression] =
+  def disjunction: Parser[CsdlBody] =
     conjunction ~ "or".ri ~ disjunction ^^ {
       s => new Or(s._1._1, s._2)
     } |
     conjunction
 
-  def conjunction: Parser[Expression] =
+  def conjunction: Parser[CsdlBody] =
     expression ~ "and".ri ~ conjunction ^^ {
       s => new And(s._1._1, s._2)
     } |
     expression
 
-  def expression: Parser[Expression] = rule |
+  def expression: Parser[CsdlBody] = rule |
                                        stream |
                                        negation |
                                        grouped
 
-  def grouped: Parser[Expression] = "(" ~ expressions ~ ")" ^^ {
+  def grouped: Parser[CsdlBody] = "(" ~ expressions ~ ")" ^^ {
     s => s._1._2
   }
 
-  def negation: Parser[Expression] = "not".ri ~ expression ^^ {
+  def negation: Parser[CsdlBody] = "not".ri ~ expression ^^ {
     s => new Not(s._2)
   }
 
-  def rule: Parser[Rule] = target ~ binaryOperator ~ argument ^^ {
-                             s => Rule(s._1._1, s._1._2.caseInsensitive, s._2)
+  def rule: Parser[Rule] = target ~ binaryOperatorType ~ argument ^^ {
+                             s => Rule(s._1._1, Operator(s._1._2, cs=false), s._2)
                            } |
-                           target ~ "cs".ri ~ binaryOperator ~ argument ^^ {
-                             s => Rule(s._1._1._1, s._1._2.caseSensitive, s._2)
+                           target ~ "cs".ri ~ binaryOperatorType ~ argument ^^ {
+                             s => Rule(s._1._1._1, Operator(s._1._2, cs=true), s._2)
                            } |
-                           target ~ unitaryOperator ^^ {
-                             s => Rule(s._1, s._2, null)
+                           target ~ unitaryOperatorType ^^ {
+                             s => Rule(s._1, Operator(s._2, cs=false), null)
                            }
 
   def target: Parser[Target] = """[\w\._]+""".r ^^ {
@@ -71,14 +73,15 @@ class CsdlParsers extends RegexParsers {
     s => new Stream(s._2.value)
   }
 
-  def unitaryOperator: Parser[Operator] = List("exists").mkString("|").ri ^^ {
-    s => new Operator(s.toLowerCase)
+  def unitaryOperatorType: Parser[String] = List("exists").mkString("|").ri ^^ {
+    _.toLowerCase
   }
 
-  def binaryOperator: Parser[Operator] = List("contains",
+  def binaryOperatorType: Parser[String] = List("contains",
     "substr",
     "contains_any",
     "contains_near",
+    "any",
     "in",
     "==",
     "!=",
@@ -91,7 +94,7 @@ class CsdlParsers extends RegexParsers {
     "geo_box",
     "geo_radius",
     "geo_polygon").mkString("|").ri ^^ {
-    s => new Operator(s.toLowerCase)
+    _.toLowerCase
   }
 
   def argument: Parser[Argument] = text | textList ^^ {
