@@ -84,4 +84,9 @@ class LogicalOperatorTest extends ParserTestBase {
       Rule(Target("c.c"), Operator("=="), Text("c"))
     ))
   }
+
+  it must "give not priority over rules" in {
+    implicit val parserToTest = expression
+    parsing("not interaction.content contains a") must equal(Not(Rule(Target("interaction.content"), Operator("contains"), Text("a"))))
+  }
 }

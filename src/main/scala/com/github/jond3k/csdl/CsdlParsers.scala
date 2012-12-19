@@ -43,10 +43,10 @@ class CsdlParsers extends RegexParsers {
     } |
     expression
 
-  def expression: Parser[CsdlBody] = rule |
-                                       stream |
-                                       negation |
-                                       grouped
+  def expression: Parser[CsdlBody] = negation |
+                                     rule |
+                                     stream |
+                                     grouped
 
   def grouped: Parser[CsdlBody] = "(" ~ expressions ~ ")" ^^ {
     s => s._1._2
