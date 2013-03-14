@@ -82,23 +82,25 @@ class CsdlParsers extends RegexParsers {
 
   val unitaryOperatorRegex = orMatchRegex(unitaryOperatorList).ri
 
-  val binaryOperatorList: List[String] = List("contains",
-    "substr",
-    "contains_any",
-    "contains_near",
-    "any",
-    "in",
+  val binaryOperatorList: List[String] = List(
+    "\\bcontains\\b",
+    "\\bsubstr\\b",
+    "\\bcontains_any\\b",
+    "\\bany\\b",
+    "\\bcontains_near\\b",
+    "\\bany\\b",
+    "\\bin\\b",
     "==",
     "!=",
     ">",
     ">=",
     "<",
     "<=",
-    "regex_partial",
-    "regex_exact",
-    "geo_box",
-    "geo_radius",
-    "geo_polygon")
+    "\\bregex_partial\\b",
+    "\\bregex_exact\\b",
+    "\\bgeo_box\\b",
+    "\\bgeo_radius\\b",
+    "\\bgeo_polygon\\b")
 
   protected def orMatchRegex(list: List[String]) = list.mkString("|")
 
