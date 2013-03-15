@@ -12,7 +12,9 @@ import org.codehaus.jackson.JsonNode
  */
 object DefinitionManagerOperatorFrequency extends App {
 
-  val url     = "http://pndebug.reh.favsys.net:88/definitionmanager/"
+  require(args.size < 1, "usage: url")
+
+  val url     = args(0)
   val file    = new File("/Users/jon/unique_historic_streams.txt")
   val scanner = new Scanner(file)
   var allowed = -1
