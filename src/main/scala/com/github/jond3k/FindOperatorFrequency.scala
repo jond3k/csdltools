@@ -65,6 +65,8 @@ object FindOperatorFrequency {
       case CsdlTaggedBody(tags, returns) =>
         tags.foreach(tag => apply(tag.expressions, result))
         apply(returns.expression, result)
+      case _: Stream =>
+        add("stream", result)
       case And(l, r) =>
         apply(l, result)
         apply(r, result)

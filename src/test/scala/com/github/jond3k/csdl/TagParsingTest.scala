@@ -18,6 +18,8 @@ class TagParsingTest extends ParserTestBase {
     implicit val parserToTest = returns
     parsing("return {interaction.type==\"twitter\"}") must equal(
       Returns(Rule(Target("interaction.type"), Operator("=="), Text("twitter"))))
+    parsing("return { twitter.text contains \"rihanna\" }") must equal(
+      Returns(Rule(Target("twitter.text"), Operator("contains"), Text("rihanna"))))
   }
 
   it must "parse tag blocks correctly, unitary op" in {
@@ -52,6 +54,15 @@ class TagParsingTest extends ParserTestBase {
           Tag("tag1", Rule(Target("interaction.content"), Operator("any"), Text("facebook")))
         ),
         Returns(Rule(Target("interaction.type"), Operator("=="), Text("twitter"))))
+    )
+  }
+
+  it must "allow return blocks by themselves" in {
+    implicit val parserToTest = body
+    parsing("return { twitter.hashtags in \"AmexBaubleBarOffer\" }") must equal(
+      CsdlTaggedBody(
+        Nil,
+        Returns(Rule(Target("twitter.hashtags"), Operator("in"), Text("AmexBaubleBarOffer"))))
     )
   }
 }

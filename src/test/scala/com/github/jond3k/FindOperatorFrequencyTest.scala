@@ -28,6 +28,12 @@ class FindOperatorFrequencyTest extends MustMatchers with FlatSpec {
     )
   }
 
+  it must "detect stream and treat it as an operator" in {
+    FindOperatorFrequency(Csdl.parse("Stream \"390070f8f7a6593adebf073c6a70b9fa\"")) must equal(
+      Map("stream" -> 1)
+    )
+  }
+
   it must "detect two == operators inside tag..returns" in {
     FindOperatorFrequency(Csdl.parse("tag \"jon\" {interaction.content == \"cheese\"} return {interaction.content == \"hh\"}" )) must equal(
       Map("==" -> 2)

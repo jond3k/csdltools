@@ -72,7 +72,7 @@ class CsdlParsers extends RegexParsers {
     s => new Target(s)
   }
 
-  def stream: Parser[Stream] = "stream".ri ~ doubleQuotedText ^^ {
+  def stream: Parser[Stream] = List("stream".b, "rule".b).mkString("|").ri ~ doubleQuotedText ^^ {
     s => new Stream(s._2.value)
   }
 
@@ -94,10 +94,10 @@ class CsdlParsers extends RegexParsers {
     "in".b,
     "==",
     "!=",
-    ">",
     ">=",
-    "<",
     "<=",
+    "<",
+    ">",
     "regex_partial".b,
     "regex_exact".b,
     "geo_box".b,
