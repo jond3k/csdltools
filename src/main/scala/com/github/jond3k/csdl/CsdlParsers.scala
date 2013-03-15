@@ -127,7 +127,7 @@ class CsdlParsers extends RegexParsers {
     s => List(s)
   }
 
-  def unquotedText: Parser[Text] = "\\S+".b.r ^^ {
+  def unquotedText: Parser[Text] = """[^\(\)\s,\[\]]+""".r ^^ {
     s => new Text(s)
   }
 

@@ -12,7 +12,7 @@ import org.codehaus.jackson.JsonNode
  */
 object OperatorFrequencyScript extends App {
 
-  require(args.size < 1, "usage: url")
+  require(args.size >= 1, "usage: url")
 
   val url     = args(0)
   val file    = new File("/Users/jon/unique_historic_streams.txt")
