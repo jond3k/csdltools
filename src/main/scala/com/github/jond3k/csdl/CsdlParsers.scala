@@ -6,6 +6,8 @@ import com.github.jond3k.CaseInsensitivePattern
 import util.parsing.input.CharSequenceReader
 
 /**
+ * Implements lexing and parsing for the CSDL
+ *
  * @author Jonathan Davey <jon.davey@datasift.com>
  */
 class CsdlParsers extends RegexParsers {
@@ -83,24 +85,24 @@ class CsdlParsers extends RegexParsers {
   val unitaryOperatorRegex = orMatchRegex(unitaryOperatorList).ri
 
   val binaryOperatorList: List[String] = List(
-    "\\bcontains\\b",
-    "\\bsubstr\\b",
-    "\\bcontains_any\\b",
-    "\\bany\\b",
-    "\\bcontains_near\\b",
-    "\\bany\\b",
-    "\\bin\\b",
+    "contains".b,
+    "substr".b,
+    "contains_any".b,
+    "any".b,
+    "contains_near".b,
+    "any".b,
+    "in".b,
     "==",
     "!=",
     ">",
     ">=",
     "<",
     "<=",
-    "\\bregex_partial\\b",
-    "\\bregex_exact\\b",
-    "\\bgeo_box\\b",
-    "\\bgeo_radius\\b",
-    "\\bgeo_polygon\\b")
+    "regex_partial".b,
+    "regex_exact".b,
+    "geo_box".b,
+    "geo_radius".b,
+    "geo_polygon".b)
 
   protected def orMatchRegex(list: List[String]) = list.mkString("|")
 
@@ -125,7 +127,7 @@ class CsdlParsers extends RegexParsers {
     s => List(s)
   }
 
-  def unquotedText: Parser[Text] = """\b\S+\b""".r ^^ {
+  def unquotedText: Parser[Text] = "\\S+".b.r ^^ {
     s => new Text(s)
   }
 

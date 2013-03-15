@@ -39,7 +39,7 @@ object FindRequiredSources {
               types:    Set[String]): Set[String] = {
     csdl match {
       case CsdlTaggedBody(tags, returns) =>
-        types ++ tags.flatMap(apply(_, allTypes, types))
+        types ++ tags.flatMap(apply(_, allTypes, types)) ++ apply(returns, allTypes, types)
       case And(l, r) =>
         types ++ apply(l, allTypes, types) ++ apply(r, allTypes, types)
       case Or(l, r) =>

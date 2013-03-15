@@ -7,4 +7,5 @@ import util.matching.Regex
  */
 class CaseInsensitivePattern(str: String) {
   def ri: Regex = ("(?i)" + str).r
+  def b: String = "\\b" + str + "\\b"
 }
