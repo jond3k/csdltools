@@ -8,9 +8,9 @@ import java.net.URL
 import org.codehaus.jackson.JsonNode
 
 /**
- * 
+ *
  */
-object DefinitionManagerOperatorFrequency extends App {
+object OperatorFrequencyScript extends App {
 
   require(args.size < 1, "usage: url")
 
