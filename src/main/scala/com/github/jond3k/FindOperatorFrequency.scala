@@ -5,6 +5,7 @@ import java.util
 import org.apache.commons.lang3.mutable.MutableInt
 import scala.collection.JavaConverters._
 import scala.util.control.TailCalls.TailRec
+import annotation.tailrec
 
 /**
  * 
@@ -27,7 +28,10 @@ object FindOperatorFrequency {
    * Merge the results from multiple jmaps in to one useful for the join phase of a multi-core fork-join
    */
   def merge(dest: util.HashMap[String, MutableInt], sources: util.HashMap[String, MutableInt]*) {
-    sources map (_.asScala) foreach {
+    sources map {
+      source =>
+        require(source != dest, "destination cannot be a source")
+        source.asScala } foreach {
       source =>
         source.foreach {
           kv =>

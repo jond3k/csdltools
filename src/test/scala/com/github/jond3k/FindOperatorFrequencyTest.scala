@@ -53,7 +53,12 @@ class FindOperatorFrequencyTest extends MustMatchers with FlatSpec {
     val jmapC = FindOperatorFrequency.newJmap
     FindOperatorFrequency(Csdl.parse("interaction == \"cheese\""), jmapA)
     FindOperatorFrequency(Csdl.parse("interaction == \"cheese\""), jmapB)
-    FindOperatorFrequency.merge(jmapC, jmapA, jmapB)
-    FindOperatorFrequency.convertJMap(jmapC) must equal(Map("==" -> 2))
+    FindOperatorFrequency.merge(jmapC, jmapA, jmapB, jmapA, jmapB)
+    FindOperatorFrequency.convertJMap(jmapC) must equal(Map("==" -> 4))
+  }
+
+  it must "prevent merging of one map in to itself" in {
+    val jmapA = FindOperatorFrequency.newJmap
+    intercept[IllegalArgumentException](FindOperatorFrequency.merge(jmapA, jmapA))
   }
 }
