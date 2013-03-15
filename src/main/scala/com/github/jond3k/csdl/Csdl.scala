@@ -7,7 +7,7 @@ import org.apache.commons.io.IOUtils
 /**
  * 
  */
-class CsdlParser {
+object Csdl {
 
   val parser = new CsdlParsers
 
@@ -26,7 +26,7 @@ class CsdlParser {
   def parseTagged(file: File): CsdlTaggedBody = parseTagged(fileContents(file))
 
   protected def fileContents(file: File): String = {
-    if (!file.exists()) throw new IllegalArgumentException("File %s doesn't exist" format file)
+    if (!file.exists) throw new IllegalArgumentException("File %s doesn't exist" format file)
     if (!file.canRead)  throw new IllegalArgumentException("File %s cannot be read" format file)
     val stream = new FileInputStream(file)
     IOUtils.toString(stream)
