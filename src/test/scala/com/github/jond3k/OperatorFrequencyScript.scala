@@ -12,12 +12,12 @@ import org.codehaus.jackson.JsonNode
  */
 object OperatorFrequencyScript extends App {
 
-  require(args.size >= 1, "usage: url")
+  require(args.size >= 2, "usage: url file")
 
   val url     = args(0)
-  val file    = new File("/Users/jon/unique_historic_streams.txt")
+  val file    = new File(args(1))
+  var allowed = if (args.size > 2) args(2).toInt else -1
   val scanner = new Scanner(file)
-  var allowed = -1
 
   val jmap    = FindOperatorFrequency.newJmap
 
@@ -39,7 +39,7 @@ object OperatorFrequencyScript extends App {
 
       } catch {
         case e: InterruptedException => // bubble up
-        case e: Exception => sys.error(e.toString)
+        case e: Exception => System.err.println(e.toString)
       }
       allowed -= 1
     }
@@ -47,7 +47,7 @@ object OperatorFrequencyScript extends App {
     case e: InterruptedException => // ignore, exit
   }
 
-  FindOperatorFrequency.convertJMap(jmap) foreach {
+  FindOperatorFrequency.convertJMap(jmap).toList.sortBy(_._2).foreach {
     case (operator, count) =>
       println("%-15s%s" format (operator, count))
   }
