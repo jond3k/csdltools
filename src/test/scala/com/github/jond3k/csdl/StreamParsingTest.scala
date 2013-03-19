@@ -11,6 +11,7 @@ class StreamParsingTest extends ParserTestBase {
   it must "parse stream expressions" in {
     implicit val parserToTest = expressions
     parsing("stream \"abcd\"") must equal(Stream("abcd"))
+    parsing("rule \"abcd\"") must equal(Stream("abcd"))
   }
 
 }
