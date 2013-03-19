@@ -1,32 +1,48 @@
-csdltools
-=========
-
-Tools for working with DataSift's Csdl query language. Contents include:
-
-* Csdl parser
-* Csdl optimiser
+#CsdlTools
 
 
-Csdl parser
-===========
+Tools for working with DataSift's Csdl query language
 
-The library uses Scala's built-in parser combinators for lexing & parsing. You can use them directly by using the
-CsdlParsers class, or more easily you can opt for the CsdlParser, which looks more like a traditional parser: it exposes
-a parse function that throws an InvalidCsdlException when it encounters invalid input.
 
-The resulting AST consists of case classes. Match them at will!
+##Csdl Parser
 
-Csdl Optimiser
-==============
+You can start parsing Csdl straight away. Just use the Csdl.parse method
 
-The library currently optimises the following:
+	val csdl = Csdl.parse("interaction.content contains \"cheese\"")
 
-* many 'contains' matches on the same target, joined by 'and' become a single 'contains_any'
+The object you'll get back is some form of CsdlBody. Using pattern matching you can decide what to do next.
 
-Future goals
-============
+    csdl match {
+      case And(l, r) =>
+        println("The left hand side is: %s" format l)
+        println("The right hand side is: %s" format r)
+      case _ => // ..
 
-Right now I'm interested in adding the following
+The hierarchy of AST classes is:
 
- * Conversion to other languages
- * Versioning, to automatically upgrade statements to newer version of the language
+	CsdlNode
+	|- CsdlBody
+	| |- And
+	| |- Or
+	| |- Not
+	| |- CsdlTaggedBody
+	| |- Returns
+	| |- Rule
+	| |- Stream
+	|- Argument
+	| |- Operator
+	| |- Target
+	| |- Text
+	| |- TextList
+	|- Tag
+
+The parser is implemented using Scala's built-in parser combinators and doesn't provide very good error-handling so isn't too good for use inside editors, etc. It can be pretty useful for automated analysis and optimzation of CSDL we already know is well-formed.
+
+##Future Goals
+
+Right now I'm interested in adding the following:
+
+* Conversion to other languages
+* Optimization
+* Pretty-printing
+* Versioning, to automatically upgrade statements to newer version of the language

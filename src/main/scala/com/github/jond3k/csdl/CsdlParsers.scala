@@ -6,6 +6,8 @@ import com.github.jond3k.CaseInsensitivePattern
 import util.parsing.input.CharSequenceReader
 
 /**
+ * Parsers for the CSDL language
+ *
  * @author Jonathan Davey <jon.davey@datasift.com>
  */
 class CsdlParsers extends RegexParsers {
@@ -20,11 +22,11 @@ class CsdlParsers extends RegexParsers {
     s => new CsdlTaggedBody(s._1, s._2)
   }
 
-  def returns: Parser[Returns] = "return".ri ~ "{" ~ expressions ~ "}" ^^ {
+  def returns: Parser[Returns] = "return".rbi ~ "{" ~ expressions ~ "}" ^^ {
     s => new Returns(s._1._2)
   }
 
-  def tag: Parser[Tag] = "tag".ri ~ doubleQuotedText ~ "{" ~ expressions ~ "}" ^^ {
+  def tag: Parser[Tag] = "tag".rbi ~ doubleQuotedText ~ "{" ~ expressions ~ "}" ^^ {
     s => new Tag(s._1._1._1._2.value, s._1._2)
   }
 
@@ -32,13 +34,13 @@ class CsdlParsers extends RegexParsers {
     disjunction
 
   def disjunction: Parser[CsdlBody] =
-    conjunction ~ "or".ri ~ disjunction ^^ {
+    conjunction ~ "or".rbi ~ disjunction ^^ {
       s => new Or(s._1._1, s._2)
     } |
     conjunction
 
   def conjunction: Parser[CsdlBody] =
-    expression ~ "and".ri ~ conjunction ^^ {
+    expression ~ "and".rbi ~ conjunction ^^ {
       s => new And(s._1._1, s._2)
     } |
     expression
@@ -52,14 +54,14 @@ class CsdlParsers extends RegexParsers {
     s => s._1._2
   }
 
-  def negation: Parser[CsdlBody] = "not".ri ~ expressions ^^ {
+  def negation: Parser[CsdlBody] = "not".rbi ~ expressions ^^ {
     s => new Not(s._2)
   }
 
   def rule: Parser[Rule] = target ~ binaryOperatorType ~ argument ^^ {
                              s => Rule(s._1._1, Operator(s._1._2, cs=false), s._2)
                            } |
-                           target ~ "cs".ri ~ binaryOperatorType ~ argument ^^ {
+                           target ~ "cs".rbi ~ binaryOperatorType ~ argument ^^ {
                              s => Rule(s._1._1._1, Operator(s._1._2, cs=true), s._2)
                            } |
                            target ~ unitaryOperatorType ^^ {
@@ -70,7 +72,7 @@ class CsdlParsers extends RegexParsers {
     s => new Target(s)
   }
 
-  def stream: Parser[Stream] = "stream".ri ~ doubleQuotedText ^^ {
+  def stream: Parser[Stream] = List("stream".b, "rule".b).mkString("|").ri ~ doubleQuotedText ^^ {
     s => new Stream(s._2.value)
   }
 
@@ -78,27 +80,29 @@ class CsdlParsers extends RegexParsers {
     _.toLowerCase
   }
 
-  val unitaryOperatorList: List[String] = List("exists")
+  val unitaryOperatorList: List[String] = List("exists".b)
 
   val unitaryOperatorRegex = orMatchRegex(unitaryOperatorList).ri
 
-  val binaryOperatorList: List[String] = List("contains",
-    "substr",
-    "contains_any",
-    "contains_near",
-    "any",
-    "in",
+  val binaryOperatorList: List[String] = List(
+    "contains".b,
+    "substr".b,
+    "contains_any".b,
+    "any".b,
+    "contains_near".b,
+    "any".b,
+    "in".b,
     "==",
     "!=",
-    ">",
     ">=",
-    "<",
     "<=",
-    "regex_partial",
-    "regex_exact",
-    "geo_box",
-    "geo_radius",
-    "geo_polygon")
+    "<",
+    ">",
+    "regex_partial".b,
+    "regex_exact".b,
+    "geo_box".b,
+    "geo_radius".b,
+    "geo_polygon".b)
 
   protected def orMatchRegex(list: List[String]) = list.mkString("|")
 
@@ -123,7 +127,7 @@ class CsdlParsers extends RegexParsers {
     s => List(s)
   }
 
-  def unquotedText: Parser[Text] = """\b\S+\b""".r ^^ {
+  def unquotedText: Parser[Text] = """[^\(\)\s,\[\]]+""".r ^^ {
     s => new Text(s)
   }
 
